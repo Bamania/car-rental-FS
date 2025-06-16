@@ -17,9 +17,11 @@ interface BookingModalProps {
   }
 }
 
-export default function BookingModal({ isOpen, onClose, car }: BookingModalProps) {
-  const navigate = useNavigate()
+export default function BookingModal({ isOpen, onClose, car }: BookingModalProps) {  const navigate = useNavigate()
   const [days, setDays] = useState(1)
+  const [isAvailabilityChecked, setIsAvailabilityChecked] = useState(false)
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
+  const [isCarAvailable, setIsCarAvailable] = useState(false)
 
   const { id } = useParams()
 
@@ -38,14 +40,18 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
   })
 
   const [isMapOpen, setIsMapOpen] = useState(false)
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
 
-    // Calculate days if dates are provided
+    // Reset availability check when dates change
     if (field === 'pickupDate' || field === 'dropoffDate') {
+      setIsAvailabilityChecked(false)
+      setIsCarAvailable(false)
+      
       const pickup = field === 'pickupDate' ? value : formData.pickupDate
       const dropoff = field === 'dropoffDate' ? value : formData.dropoffDate
       
@@ -58,7 +64,6 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
       }
     }
   }
-
   const handleLocationSelect = (location: { lat: number; lng: number; address: string }) => {
     setFormData(prev => ({
       ...prev,
@@ -66,23 +71,74 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
     }))
     setIsMapOpen(false)
   }
-
+  const handleCheckAvailability = async () => {
+    setIsCheckingAvailability(true)
+    try {
+      // Make API call to check availability
+      const response = await axios.post(`${backendUrl}/api/check-availability`, {
+        carId: parseInt(id!),
+        pickupDate: formData.pickupDate,
+        dropoffDate: formData.dropoffDate
+      }, {
+        withCredentials: true
+      })
+      
+      const available = response.data.available
+      setIsCarAvailable(available)
+      setIsAvailabilityChecked(true)
+      
+      if (!available) {
+        const errorMessage = response.data.errors?.length > 0 
+          ? response.data.errors.join('\n') 
+          : 'Car is not available for the selected dates.'
+        alert(`Sorry, this car is not available:\n\n${errorMessage}\n\nPlease choose different dates.`)
+      } else {
+        alert('Great! This car is available for your selected dates. You can now proceed with booking.')
+      }
+    } catch (error) {
+      console.error('Error checking availability:', error)
+      alert('Error checking availability. Please try again.')
+      setIsAvailabilityChecked(false)
+      setIsCarAvailable(false)
+    } finally {
+      setIsCheckingAvailability(false)
+    }
+  }
   const handleConfirmBooking = async() => {
- 
     console.log(formData)
-    const response = await axios.post(`${backendUrl}/api/book`,{
-      formData
-    }, {
-      withCredentials: true
-    });
-    console.log(response.data)
-
-    alert(`Booking confirmed for ${car.brand} ${car.name}!\nTotal: $${total}\nRedirecting to trips page...`)
-    onClose()
-    
-    setTimeout(() => {
-      navigate('/trips')
-    }, 1000)
+    try {
+      const response = await axios.post(`${backendUrl}/api/book`, {
+        formData
+      }, {
+        withCredentials: true
+      });
+      
+      if (response.data.success) {
+        alert(`Booking confirmed for ${car.brand} ${car.name}!\nTotal: $${total}\nRedirecting to trips page...`)
+        onClose()
+        
+        setTimeout(() => {
+          navigate('/trips')
+        }, 1000)
+      }
+    } catch (error: any) {
+      console.error('Booking error:', error)
+      
+      if (error.response?.status === 409) {
+        // Car was just booked by someone else
+        alert('Sorry, this car was just booked by another user. Please check availability again.')
+        setIsAvailabilityChecked(false)
+        setIsCarAvailable(false)
+      } else if (error.response?.status === 400 && error.response?.data?.errors) {
+        // Validation errors
+        const errorMessages = error.response.data.errors.join('\n')
+        alert(`Booking failed:\n${errorMessages}`)
+        setIsAvailabilityChecked(false)
+        setIsCarAvailable(false)
+      } else {
+        alert('Booking failed. Please try again.')
+      }
+    }
   }
 
   if (!isOpen) return null
@@ -210,16 +266,30 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                     <span>${total}</span>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Confirm booking button */}
+              </div>            </div>            {/* Check Availability button */}
             <Button 
-              onClick={handleConfirmBooking}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-6"
-              disabled={!formData.pickupDate || !formData.dropoffDate || !formData.firstName || !formData.emailAddress}
+              onClick={handleCheckAvailability}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 mt-6"
+              disabled={!formData.pickupDate || !formData.dropoffDate || !formData.pickupLocation || isCheckingAvailability}
             >
-              Confirm booking            </Button>
+              {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+            </Button>            {/* Confirm booking button - only show if availability is checked and car is available */}
+            {isAvailabilityChecked && isCarAvailable && (
+              <Button 
+                onClick={handleConfirmBooking}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-2"
+                disabled={!formData.firstName || !formData.emailAddress || !formData.phoneNumber}
+              >
+                Confirm booking
+              </Button>
+            )}
+
+            {/* Show message if availability is checked but car is not available */}
+            {isAvailabilityChecked && !isCarAvailable && (
+              <div className="w-full bg-red-600/20 border border-red-600 text-red-400 text-center py-3 mt-2 rounded-lg">
+                This car is not available for the selected dates
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
