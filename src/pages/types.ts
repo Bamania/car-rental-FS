@@ -17,3 +17,18 @@ export interface FilterState {
   rating: number[]
   priceRange: [number, number]
 }
+export interface BookedCar {
+  id: number;
+  pickupDate: string;
+  dropoffDate: string;
+  pickupLocation: string;
+  totalPrice: number;
+  createdAt: string;
+  car: {
+    id: number;
+    brand: string;
+    name: string;
+    image: string;
+    price_per_day: number;
+  };
+}

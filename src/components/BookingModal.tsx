@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import MapLocationPicker from "./MapLocationPicker"
 import axios from "axios"
+import { useParams } from "react-router-dom"
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface BookingModalProps {
@@ -19,12 +20,14 @@ interface BookingModalProps {
 export default function BookingModal({ isOpen, onClose, car }: BookingModalProps) {
   const navigate = useNavigate()
   const [days, setDays] = useState(1)
-  
+
+  const { id } = useParams()
+
   const subtotal = car.price_per_day * days
   const taxes = Math.round(subtotal * 0.1) // 10% tax
   const total = subtotal + taxes
   const [formData, setFormData] = useState({
-    carId:12,
+    carId:parseInt(id!),
     pickupDate: '',
     dropoffDate: '',
     pickupLocation: '',
@@ -65,16 +68,18 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
   }
 
   const handleConfirmBooking = async() => {
-    // Handle booking confirmation logic here
+ 
     console.log(formData)
     const response = await axios.post(`${backendUrl}/api/book`,{
       formData
+    }, {
+      withCredentials: true
     });
-    console.log(response)
+    console.log(response.data)
 
     alert(`Booking confirmed for ${car.brand} ${car.name}!\nTotal: $${total}\nRedirecting to trips page...`)
     onClose()
-    // Navigate to trips page to show the new booking
+    
     setTimeout(() => {
       navigate('/trips')
     }, 1000)

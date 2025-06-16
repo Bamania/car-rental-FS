@@ -15,12 +15,12 @@ function App() {
     <div className="bg-emerald-">
       <Router>
         <Routes>
-          {/* Public Routes */}
+
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           
-          {/* Protected Routes */}
+    
           <Route 
             path="/browse" 
             element={
@@ -62,7 +62,7 @@ function App() {
             } 
           />
           
-          {/* 404 Route */}
+      
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Routes>
       </Router>
