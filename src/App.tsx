@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 
@@ -7,23 +6,63 @@ import BrowsePage from "./pages/Browse";
 import CarDetailsPage from "./pages/CarDetails";
 import TripsPage from "./pages/Trips";
 import SavedCarsPage from "./pages/SavedCars";
+import LoginPage from "./pages/Login";
+import SignupPage from "./pages/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
- 
-  
   return (
     <div className="bg-emerald-">
       <Router>
         <Routes>
-          
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/browse" element={<BrowsePage />} />
-          <Route path="/booking" element={<TripsPage />} />
-          <Route path="/trips" element={<TripsPage />} />
-          <Route path="/saved" element={<SavedCarsPage />} />
-          <Route path="/login" element={<div>Login Page</div>} />
-          <Route path="/signup" element={<div>Signup Page</div>} />
-          <Route path="/car/:id" element={<CarDetailsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/browse" 
+            element={
+              <ProtectedRoute>
+                <BrowsePage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/booking" 
+            element={
+              <ProtectedRoute>
+                <TripsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trips" 
+            element={
+              <ProtectedRoute>
+                <TripsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/saved" 
+            element={
+              <ProtectedRoute>
+                <SavedCarsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/car/:id" 
+            element={
+              <ProtectedRoute>
+                <CarDetailsPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* 404 Route */}
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Routes>
       </Router>

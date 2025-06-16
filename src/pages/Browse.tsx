@@ -3,21 +3,16 @@ import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 // import { data } from "@/mockdata/index"
-import {useCarData}  from "../context/carData"
+import {useCarData}  from "./context/carData"
+import type { FilterState } from "./types"
 
-interface FilterState {
-  carType: string[]
-  fuelType: string[]
-  transmission: string[]
-  rating: number[]
-  priceRange: [number, number]
-}
+
 
 export default function BrowsePage() {
   const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState(1)
-  const [savedCars, setSavedCars] = useState<string[]>([]) // Track saved car IDs
-    const data=useCarData();
+  const [savedCars, setSavedCars] = useState<number[]>([]) // Track saved car IDs
+  const data=useCarData();
   
   const [filters, setFilters] = useState<FilterState>({
     carType: [],
@@ -41,10 +36,10 @@ export default function BrowsePage() {
     
     return matchesCarType && matchesFuelType && matchesTransmission && matchesRating && matchesPrice
   })
-
-  // Paginate filtered data
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
+  // Paginate filtered data
   const handleFilterChange = (filterType: keyof FilterState, value: string | number | [number, number]) => {
     setFilters(prev => {
       if (filterType === 'priceRange') {
@@ -60,12 +55,12 @@ export default function BrowsePage() {
     setCurrentPage(1) // Reset to first page when filters change
   }
 
-  const handleSaveCar = (carSlug: string, e: React.MouseEvent) => {
+  const handleSaveCar = (carId: number, e: React.MouseEvent) => {
     e.stopPropagation()
     setSavedCars(prev => 
-      prev.includes(carSlug) 
-        ? prev.filter(id => id !== carSlug)
-        : [...prev, carSlug]
+      prev.includes(carId) 
+        ? prev.filter(id => id !== carId)
+        : [...prev, carId]
     )
   }
 
@@ -90,8 +85,8 @@ export default function BrowsePage() {
               className="bg-[#2a2d32] text-white px-4 py-2 rounded-lg text-sm w-64"
             />
           </div>
-          <Button variant="outline" size="sm">Log In</Button>
-          <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
+          
+          
         </div>
       </header>
 
@@ -196,12 +191,15 @@ export default function BrowsePage() {
             {/* Cars Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {paginatedData.map((car, index) => {
-              const carSlug = `${car.brand.toLowerCase()}-${car.name.toLowerCase()}`.replace(/\s+/g, '-')
-              return (                <Card 
+              const carId=car.id 
+              console.log("Carid",carId)
+              return (                
+              <Card 
                   key={`${car.name}-${index}`} 
                   className="bg-[#232428] border-none rounded-lg overflow-hidden cursor-pointer hover:bg-[#2a2d32] transition-colors"
-                  onClick={() => navigate(`/car/${carSlug}`)}
-                >                  <div className="relative">
+                  onClick={() => navigate(`/car/${carId}`)}
+                >                  
+                <div className="relative">
                     <img
                       src={car.image}
                       alt={`${car.brand} ${car.name}`}
@@ -212,12 +210,12 @@ export default function BrowsePage() {
                     </div>
                     {/* Save/Heart Button */}
                     <button
-                      onClick={(e) => handleSaveCar(carSlug, e)}
+                      onClick={(e) => handleSaveCar(carId!, e)}
                       className="absolute top-2 right-2 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
                     >
                       <svg 
-                        className={`w-5 h-5 ${savedCars.includes(carSlug) ? 'text-red-500 fill-current' : 'text-white'}`}
-                        fill={savedCars.includes(carSlug) ? "currentColor" : "none"}
+                        className={`w-5 h-5 ${savedCars.includes(carId!) ? 'text-red-500 fill-current' : 'text-white'}`}
+                        fill={savedCars.includes(carId!) ? "currentColor" : "none"}
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
                       >
@@ -226,7 +224,7 @@ export default function BrowsePage() {
                     </button>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{car.brand} {car.name}</h3>
+                    <h3 className="font-semibold text-white text-lg mb-1">{car.brand} {car.name}</h3>
                     <p className="text-gray-400 text-sm mb-2">{car.type}</p>
                     <div className="flex justify-between items-center">
                       <span className="text-white font-semibold">${car.price_per_day}/day</span>                      <Button 
@@ -234,12 +232,16 @@ export default function BrowsePage() {
                         className="bg-blue-600 hover:bg-blue-700"
                         onClick={(e) => {
                           e.stopPropagation()
-                          navigate(`/car/${carSlug}`)
+                          navigate(`/car/${carId}`)
                         }}
                       >
                         Rent
                       </Button>
                     </div>
+                    <p className="text-white">
+                    {car.description}
+                      
+                    </p>
                   </CardContent>
                 </Card>
               )

@@ -1,32 +1,24 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import sidecar from "@/assets/images/carSide.jpg"
-import { data } from "@/mockdata/index"
-import { Link ,useNavigate} from "react-router-dom"
-import { useContext, useEffect, useState } from "react"
-import axios from "axios"
-import { CarDataContext, useCarData } from "@/context/carData"
 
-type Car = {
-  brand: string
-  name: string
-  type: string
-  price_per_day: number
-  fuel_type: string
-  image: string
-  rating: number
-}
+import { Link ,useNavigate} from "react-router-dom"
+
+import { useCarData } from "@/pages/context/carData"
+import { useAuth } from "@/hooks/useAuth"
+
 
 export default function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate()
   const data=useCarData();
 
 
 
   const featuredCars = data.slice(0, 3).map(car => ({
-    id: `${car.brand.toLowerCase()}-${car.name.toLowerCase()}`.replace(/\s+/g, '-'),
+    id:car.id,
     title: `${car.brand} ${car.name}`,
-    desc: `${car.type} - $${car.price_per_day}/day - ${car.fuel_type}`,
+    desc: `${car.description}`,
     img: car.image,
   }))
 
@@ -34,9 +26,9 @@ export default function LandingPage() {
     .filter(car => car.rating >= 4.6)
     .slice(0, 3)
     .map(car => ({
-      id: `${car.brand.toLowerCase()}-${car.name.toLowerCase()}`.replace(/\s+/g, '-'),
+    id:car.id,
       title: `${car.brand} ${car.name}`,
-      desc: `Rating: ${car.rating}/5 - $${car.price_per_day}/day`,
+    desc: `${car.description}`,
       img: car.image,
     }))
 
@@ -45,11 +37,30 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen w-full bg-[#18191C] text-white">
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
-        <span className="font-bold text-lg">DriveGo</span>
-        <nav className="flex gap-8 items-center">
+        <span className="font-bold text-lg">DriveGo</span>        <nav className="flex gap-8 items-center">
             <Link to="/browse">Browse</Link>
         <Link to="/booking">My Bookings</Link>
-          <Button variant="outline" className="ml-4">Login/Signup</Button>
+          <div className="flex gap-2 ml-4">
+            {isAuthenticated ? (
+              <Button
+              variant="outline"
+              onClick={() => {
+              
+              }}
+              >
+              Logout
+              </Button>
+            ) : (
+              <>
+              <Link to="/login">
+                <Button variant="outline">Login</Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+              </Link>
+              </>
+            )}
+          </div>
         </nav>
       </header>
 

@@ -2,8 +2,9 @@ import { useParams, Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { data } from "@/mockdata/index"
+
 import BookingModal from "@/components/BookingModal"
+import { useCarData } from "@/pages/context/carData"
 
 // Mock reviews data
 const mockReviews = [
@@ -30,15 +31,13 @@ const mockReviews = [
 ]
 
 export default function CarDetailsPage() {
-  const { id } = useParams()
+  const data=useCarData()
+ const { id } = useParams() 
   const navigate = useNavigate()
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   
-  // Find the car by creating a slug from the car data
-  const car = data.find(car => {
-    const slug = `${car.brand.toLowerCase()}-${car.name.toLowerCase()}`.replace(/\s+/g, '-')
-    return slug === id
-  })
+  
+ const car = data.find(car => car.id!.toString() === id)
 
   if (!car) {
     return (
@@ -179,7 +178,7 @@ export default function CarDetailsPage() {
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}
           car={car}
-        />
+        /> 
       </div>
     </div>
   )

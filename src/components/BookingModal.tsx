@@ -2,6 +2,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import MapLocationPicker from "./MapLocationPicker"
+import axios from "axios"
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface BookingModalProps {
   isOpen: boolean
@@ -15,17 +18,23 @@ interface BookingModalProps {
 
 export default function BookingModal({ isOpen, onClose, car }: BookingModalProps) {
   const navigate = useNavigate()
+  const [days, setDays] = useState(1)
+  
+  const subtotal = car.price_per_day * days
+  const taxes = Math.round(subtotal * 0.1) // 10% tax
+  const total = subtotal + taxes
   const [formData, setFormData] = useState({
+    carId:12,
     pickupDate: '',
     dropoffDate: '',
     pickupLocation: '',
     firstName: '',
     phoneNumber: '',
-    emailAddress: ''
+    emailAddress: '',
+    totalPrice:total
   })
 
-  const [days, setDays] = useState(1)
-
+  const [isMapOpen, setIsMapOpen] = useState(false)
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -47,11 +56,22 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
     }
   }
 
-  const subtotal = car.price_per_day * days
-  const taxes = Math.round(subtotal * 0.1) // 10% tax
-  const total = subtotal + taxes
-  const handleConfirmBooking = () => {
+  const handleLocationSelect = (location: { lat: number; lng: number; address: string }) => {
+    setFormData(prev => ({
+      ...prev,
+      pickupLocation: location.address
+    }))
+    setIsMapOpen(false)
+  }
+
+  const handleConfirmBooking = async() => {
     // Handle booking confirmation logic here
+    console.log(formData)
+    const response = await axios.post(`${backendUrl}/api/book`,{
+      formData
+    });
+    console.log(response)
+
     alert(`Booking confirmed for ${car.brand} ${car.name}!\nTotal: $${total}\nRedirecting to trips page...`)
     onClose()
     // Navigate to trips page to show the new booking
@@ -102,20 +122,27 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                   className="w-full bg-[#2a2d32] border border-[#3a3d42] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
-            </div>
-
-            {/* Pick-up location */}
+            </div>            {/* Pick-up location */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
                 Pick-up location
               </label>
-              <input
-                type="text"
-                placeholder="Enter pickup location"
-                value={formData.pickupLocation}
-                onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
-                className="w-full bg-[#2a2d32] border border-[#3a3d42] rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Enter pickup location"
+                  value={formData.pickupLocation}
+                  onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
+                  className="w-full bg-[#2a2d32] border border-[#3a3d42] rounded-lg px-3 py-2 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsMapOpen(true)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                >
+                  📍 Map
+                </button>
+              </div>
             </div>
 
             {/* First name */}
@@ -187,11 +214,17 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-6"
               disabled={!formData.pickupDate || !formData.dropoffDate || !formData.firstName || !formData.emailAddress}
             >
-              Confirm booking
-            </Button>
+              Confirm booking            </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Map Location Picker Modal */}
+      <MapLocationPicker
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        onLocationSelect={handleLocationSelect}
+      />
     </div>
   )
 }

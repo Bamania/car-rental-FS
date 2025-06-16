@@ -1,18 +1,9 @@
+import type { Car } from "@/pages/types";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
-type Car = {
-    id?: number;
-    brand: string;
-    name: string;
-    type: string;
-    price_per_day: number;
-  fuel_type: string;
-  transmission:string,
-  image: string;
-  rating: number;
-}
 
 type CarDataContextType = {
   data: Car[];
@@ -25,7 +16,8 @@ export const CarDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<Car[]>([]);
   const fetchFunction = async () => {
   
-    const response = await axios.get('http://localhost:3000/api/cars')
+    
+    const response = await axios.get(`${backendUrl}/api/cars`);
     console.log(response.data)
     setData(response.data)
   }
