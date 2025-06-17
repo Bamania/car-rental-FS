@@ -101,14 +101,12 @@ export default function BrowsePage() {
   return (
     <div className="min-h-screen bg-[#18191C] text-white">      {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
-        <Link to="/" className="font-bold text-lg hover:text-gray-300 font-mono">
-          AutoZen
+        <Link to="/" className=" text-2xl  hover:text-gray-300 font-mono">
+          DriveGo
         </Link>
         <nav className="flex gap-8 items-center">
-          <span className="text-blue-400 font-mono">Ride</span>
-          <Link to="/rent" className="hover:underline font-mono">Rent</Link>
-          <Link to="/eat" className="hover:underline font-mono">Eat</Link>
-          <Link to="/charter" className="hover:underline font-mono">Charter</Link>
+         
+         
         </nav>
         <div className="flex items-center gap-4">
           <div className="relative">            <input
