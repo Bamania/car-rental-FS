@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     try {
       const response = await axios.post(
-        `${backendUrl}/auth/login`,
+        `${backendUrl}auth/login`,
         { formData },
         { withCredentials: true }
       )

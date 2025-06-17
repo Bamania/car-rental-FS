@@ -27,7 +27,7 @@ export default function TripsPage() {
     setError(null);
 
     try {
-      const response = await axios.get(`${backendUrl}/api/book/${userId}`, {
+      const response = await axios.get(`${backendUrl}api/book/${userId}`, {
         withCredentials: true
       });
 

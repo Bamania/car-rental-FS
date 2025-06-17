@@ -47,7 +47,7 @@ export default function SignupPage() {
       return
     }
     try {
-      const response = await axios.post(`${backendUrl}/auth/signup`, {
+      const response = await axios.post(`${backendUrl}auth/signup`, {
         formData
       });
 
