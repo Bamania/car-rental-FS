@@ -1,54 +1,145 @@
-# React + TypeScript + Vite
+# Car Rental Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack car rental platform built with modern web technologies, featuring user authentication, car browsing, booking management.
 
-Currently, two official plugins are available:
+##  Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Frontend
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Styling
+- **React Router DOM** - Client-side routing
+- **Axios** - HTTP client
+- **Framer Motion** - Animations
+- **React Leaflet** - Interactive maps
+- **Lucide React** - Icons
 
-## Expanding the ESLint configuration
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **TypeScript** - Type safety
+- **Prisma** - Database ORM
+- **PostgreSQL** - Database
+- **JWT** - Authentication
+- **bcrypt** - Password hashing
+- **CORS** - Cross-origin resource sharing
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Deployment
+- **Vercel** - Frontend hosting
+- **Render** - Backend hosting
+- **PostgreSQL** - Database (Render managed)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Live Demo link
+
+- **Frontend:** [https://car-rental-fs.vercel.app/]
+- **Backend API:** [https://car-rental-be-mmm4.onrender.com]
+
+## �� Features
+
+### Bonus Features
+  -Added interactive maps to pick up the location !
+
+
+
+## 🗄️ Database Schema
+
+### Users Table
+```sql
+model User {
+  id          Int     @id @default(autoincrement())
+  name        String  
+  email       String  @unique
+  password    String 
+  phoneNumber String
+  bookings    BookingInfo[]
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Cars Table
+```sql
+model CarInfo {
+  id            Int     @id @default(autoincrement())
+  name          String
+  brand         String
+  image         String
+  type          String
+  price_per_day Float
+  rating        Float
+  description   String  @default("no description available")
+  fuel_type     String
+  transmission  String
+  bookings      BookingInfo[]
+}
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Bookings Table
+```sql
+model BookingInfo {
+  id             Int      @id @default(autoincrement())
+  carId          Int
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  car            CarInfo  @relation(fields: [carId], references: [id])
+  pickupDate     String
+  dropoffDate    String
+  pickupLocation String
+  totalPrice     Float
+  createdAt      DateTime @default(now())
+}
+```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## 🛠️ Local Development Setup
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- PostgreSQL database
+
+### Frontend Setup
+```bash
+# Clone the repository
+git clone [your-repo-url]
+cd car-rental
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+
+# Add your backend URL to .env
+VITE_BACKEND_URL=http://localhost:3001
+
+# Start development server
+npm run dev
+```
+
+### Backend Setup
+```bash
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+
+# Configure environment variables
+DATABASE_URL="postgresql://username:password@localhost:5432/car_rental"
+JWT_SECRET="your-secret-key"
+FRONTEND_URL="http://localhost:5173"
+
+# Generate Prisma client
+npm run prisma:generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed the database (optional)
+npm run seed
+
+# Start development server
+npm run dev
 ```
