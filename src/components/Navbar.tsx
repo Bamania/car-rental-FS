@@ -10,14 +10,22 @@ export default function Navbar() {
  
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
   });
 
   const handleSignOut = async () => {
-    await logout();
-    navigate("/");
+    setIsSigningOut(true);
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
@@ -100,9 +108,17 @@ export default function Navbar() {
                   variant="link"
                   className="relative overflow-hidden shadow-lg hover:shadow-blue-500/50 transition-all duration-300 group"
                   onClick={handleSignOut}
+                  disabled={isSigningOut}
                 >
-                  <span className="relative font-mono  text-white z-10">
-                    Sign Out
+                  <span className="relative font-mono text-white z-10 flex items-center gap-2">
+                    {isSigningOut && (
+                      <motion.div
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      />
+                    )}
+                    {isSigningOut ? "Signing Out..." : "Sign Out"}
                   </span>
                 </Button>
               </motion.div>
@@ -154,6 +170,30 @@ export default function Navbar() {
         animate={{ scaleX: isScrolled ? 1 : 0 }}
         transition={{ duration: 0.3 }}
       />
+
+      {/* Full-screen loader overlay */}
+      {isSigningOut && (
+        <motion.div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bg-white/10 backdrop-blur-md rounded-lg p-8 flex flex-col items-center gap-4"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="w-12 h-12 border-4 border-white border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <p className="text-white font-mono text-lg">Signing out...</p>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.header>
   );
 }
