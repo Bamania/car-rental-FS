@@ -17,7 +17,7 @@ export const CarDataProvider = ({ children }: { children: ReactNode }) => {
   const fetchFunction = async () => {
   
     
-    const response = await axios.get(`${backendUrl}api/cars`);
+    const response = await axios.get(`${backendUrl}/api/cars`);
     console.log(response.data)
     setData(response.data)
   }

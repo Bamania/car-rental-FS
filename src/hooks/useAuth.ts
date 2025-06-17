@@ -24,7 +24,7 @@ export const useAuth = () => {
     setAuthState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const response = await axios.get(`${backendUrl}auth/me`, {
+      const response = await axios.get(`${backendUrl}/auth/me`, {
         withCredentials: true,
       });
       if (response.status === 200) {

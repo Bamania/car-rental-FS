@@ -66,7 +66,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
   const handleCheckAvailability = async () => {
     setIsCheckingAvailability(true)
     try {
-      const response = await axios.post(`${backendUrl}api/check-availability`, {
+      const response = await axios.post(`${backendUrl}/api/check-availability`, {
         carId: parseInt(id!),
         pickupDate: formData.pickupDate,
         dropoffDate: formData.dropoffDate
@@ -98,7 +98,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
 
   const handleConfirmBooking = async () => {
     try {
-      const response = await axios.post(`${backendUrl}api/book`, {
+      const response = await axios.post(`${backendUrl}/api/book`, {
         formData
       }, {
         withCredentials: true
