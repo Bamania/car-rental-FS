@@ -1,18 +1,19 @@
-import { useContext, useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 // import { data } from "@/mockdata/index"
-import {useCarData}  from "./context/carData"
 import type { FilterState } from "./types"
+import { useCarData } from "@/hooks/useCarData"
 
 
 
 export default function BrowsePage() {
   const navigate = useNavigate()
-  const [currentPage, setCurrentPage] = useState(1)
+  const [displayedItems, setDisplayedItems] = useState(12) // Start with 12 items
+  const [isLoading, setIsLoading] = useState(false)
   const [savedCars, setSavedCars] = useState<number[]>([]) // Track saved car IDs
-  const data=useCarData();
+  const data = useCarData();
   
   const [filters, setFilters] = useState<FilterState>({
     carType: [],
@@ -22,11 +23,8 @@ export default function BrowsePage() {
     priceRange: [0, 300]
   })
 
-  const itemsPerPage = 8
-  const totalPages = Math.ceil(data.length / itemsPerPage)
-// Replace 'YourContext' with the actual context you want to use
+  const itemsPerLoad = 8 // Items to load per scroll
 
-  // Filter data based on selected filters
   const filteredData = data.filter(car => {
     const matchesCarType = filters.carType.length === 0 || filters.carType.includes(car.type)
     const matchesFuelType = filters.fuelType.length === 0 || filters.fuelType.includes(car.fuel_type)
@@ -36,10 +34,46 @@ export default function BrowsePage() {
     
     return matchesCarType && matchesFuelType && matchesTransmission && matchesRating && matchesPrice
   })
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
-  // Paginate filtered data
+  // Get currently displayed data
+  const displayedData = filteredData.slice(0, displayedItems)
+  const hasMore = displayedItems < filteredData.length
+
+  // Infinite scroll logic
+  const loadMoreItems = useCallback(() => {
+    if (isLoading || !hasMore) return
+    
+    setIsLoading(true)
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setDisplayedItems(prev => prev + itemsPerLoad)
+      setIsLoading(false)
+    }, 500)
+  }, [isLoading, hasMore, itemsPerLoad])
+
+  // Scroll event handler
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    const windowHeight = window.innerHeight
+    const documentHeight = document.documentElement.scrollHeight
+
+    // Load more when user scrolls to 80% of the page
+    if (scrollTop + windowHeight >= documentHeight * 0.8) {
+      loadMoreItems()
+    }
+  }, [loadMoreItems])
+
+  // Add scroll listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [handleScroll])
+
+  // Reset displayed items when filters change
+  useEffect(() => {
+    setDisplayedItems(12) // Reset to initial count
+  }, [filters])
+
   const handleFilterChange = (filterType: keyof FilterState, value: string | number | [number, number]) => {
     setFilters(prev => {
       if (filterType === 'priceRange') {
@@ -52,7 +86,7 @@ export default function BrowsePage() {
         : [...currentValues, value as string | number]
         return { ...prev, [filterType]: newValues }
     })
-    setCurrentPage(1) // Reset to first page when filters change
+    // Filters will reset displayedItems via useEffect
   }
 
   const handleSaveCar = (carId: number, e: React.MouseEvent) => {
@@ -186,14 +220,13 @@ export default function BrowsePage() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          <h1 className="text-2xl font-semibold mb-6">Available Cars</h1>
+        <main className="flex-1 p-6">          <h1 className="text-2xl font-semibold mb-6">Available Cars ({filteredData.length} results)</h1>
             {/* Cars Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {paginatedData.map((car, index) => {
-              const carId=car.id 
-              console.log("Carid",carId)
-              return (                
+            {displayedData.map((car, index) => {
+              const carId = car.id 
+              console.log("Carid", carId)
+              return (
               <Card 
                   key={`${car.name}-${index}`} 
                   className="bg-[#232428] border-none rounded-lg overflow-hidden cursor-pointer hover:bg-[#2a2d32] transition-colors"
@@ -245,44 +278,56 @@ export default function BrowsePage() {
                   </CardContent>
                 </Card>
               )
-            })}
-          </div>
+            })}          </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-            >
-              ←
-            </Button>
-            
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const pageNum = i + Math.max(1, currentPage - 2)
-              return pageNum <= totalPages ? (
-                <Button
-                  key={pageNum}
-                  variant={currentPage === pageNum ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={currentPage === pageNum ? "bg-blue-600" : ""}
-                >
-                  {pageNum}
-                </Button>
-              ) : null
-            })}
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-            >
-              →
-            </Button>
-          </div>
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-400">Loading more cars...</span>
+            </div>
+          )}
+
+          {/* End of results indicator */}
+          {!hasMore && displayedData.length > 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-400">You've seen all available cars!</p>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => setDisplayedItems(12)}
+              >
+                Back to Top
+              </Button>
+            </div>
+          )}
+
+          {/* No results */}
+          {filteredData.length === 0 && (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-[#232428] rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.1-5.291-2.709M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">No cars found</h3>
+              <p className="text-gray-400 mb-6">Try adjusting your filters to see more results</p>
+              <Button 
+                onClick={() => {
+                  setFilters({
+                    carType: [],
+                    fuelType: [],
+                    transmission: [],
+                    rating: [],
+                    priceRange: [0, 300]
+                  })
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Clear All Filters
+              </Button>
+            </div>
+          )}
         </main>
       </div>
     </div>

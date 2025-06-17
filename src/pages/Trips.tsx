@@ -62,7 +62,9 @@ export default function TripsPage() {
     return new Date(dropoffDate) > new Date();
   };
   
-  // Helper function to determine trip status
+// Status is NOT stored in the database
+//  Status is calculated each time the page loads
+//  No backend API calls for status updates
   const getTripStatus = (pickupDate: string, dropoffDate: string) => {
     const now = new Date();
     const pickup = new Date(pickupDate);

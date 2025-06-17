@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 import BookingModal from "@/components/BookingModal"
-import { useCarData } from "@/pages/context/carData"
-
+import { useCarData } from "@/hooks/useCarData"
 // Mock reviews data
 const mockReviews = [
   {

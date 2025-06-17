@@ -33,12 +33,3 @@ export const CarDataProvider = ({ children }: { children: ReactNode }) => {
 
 
 //not separting the hook function to some other folder because its just one hook!
-export const useCarData =()=>{
-
-  const carData=useContext(CarDataContext)
-  if(carData===undefined){
-    throw new Error ('Some Error occured')
-  }
-
-  return carData.data;
-}
