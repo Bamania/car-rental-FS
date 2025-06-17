@@ -12,7 +12,7 @@ import { useRef } from "react"
 export default function LandingPage() {
 
   const navigate = useNavigate()
-  const data=useCarData();
+  const {data}=useCarData();
 
   // Parallax scroll effect
   const { scrollY } = useScroll()

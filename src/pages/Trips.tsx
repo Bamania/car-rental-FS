@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { CarPreloader } from "@/components/ui/LoadingCar"
 import { useAuth } from "@/hooks/useAuth"
 import axios from "axios"
 import type { BookedCar } from "./types"
+import { motion, AnimatePresence } from "framer-motion"
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -15,6 +15,7 @@ export default function TripsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { userId } = useAuth()
+  const [expandedTripId, setExpandedTripId] = useState<number | null>(null);
 
   const fetchBookedCars = async () => {
     if (!userId) {
@@ -143,7 +144,7 @@ export default function TripsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#18191C] text-white font-sans">
+    <motion.div className="min-h-screen bg-[#18191C] text-white font-sans">
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
         <Link to="/" className="font-bold text-lg hover:text-gray-300 font-mono ">
           DriveGo
@@ -156,13 +157,16 @@ export default function TripsPage() {
         </nav>
       </header>
 
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <motion.div
+        className="max-w-6xl mx-auto px-8 py-8 min-h-[80vh] flex flex-col"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
         <h1 className="text-4xl font-bold mb-8 font-mono ">My Trips</h1>
 
-      
-
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-4 rounded-lg mb-6">
+          <motion.div className="bg-red-500/20 text-red-400 p-4 rounded-lg mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {error}
             <Button 
               onClick={fetchBookedCars}
@@ -171,7 +175,7 @@ export default function TripsPage() {
             >
               Retry
             </Button>
-          </div>
+          </motion.div>
         )}
 
         <div className="flex mb-8 border-b border-[#232428]">
@@ -197,111 +201,169 @@ export default function TripsPage() {
           </button>
         </div>
 
-        <div className="space-y-6">
-          {filteredTrips.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="mb-6">
-                <div className="w-24 h-24 bg-[#232428] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
+        <div className="flex-1 flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            {filteredTrips.length === 0 ? (
+              <motion.div
+                key="no-trips"
+                className="text-center py-12 flex-1 flex flex-col justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="mb-6">
+                  <div className="w-24 h-24 bg-[#232428] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl  font-mono font-semibold text-white mb-2">
+                    No {activeTab} trips yet
+                  </h3>
+                  <p className="text-gray-400 font-mono  mb-6">
+                    {activeTab === 'upcoming' 
+                      ? "Ready to plan your next adventure? Browse our cars and book your trip!"
+                      : "Your completed trips will appear here once you've finished them."
+                    }
+                  </p>
+                  {activeTab === 'upcoming' && (
+                    <Link to="/browse">
+                      <Button className="bg-blue-600 font-mono  hover:bg-blue-700">
+                        Browse Cars
+                      </Button>
+                    </Link>
+                  )}
                 </div>
-                <h3 className="text-xl  font-mono font-semibold text-white mb-2">
-                  No {activeTab} trips yet
-                </h3>
-                <p className="text-gray-400 font-mono  mb-6">
-                  {activeTab === 'upcoming' 
-                    ? "Ready to plan your next adventure? Browse our cars and book your trip!"
-                    : "Your completed trips will appear here once you've finished them."
-                  }
-                </p>
-                {activeTab === 'upcoming' && (
-                  <Link to="/browse">
-                    <Button className="bg-blue-600 font-mono  hover:bg-blue-700">
-                      Browse Cars
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          ) : (
-            filteredTrips.map((booking) => {
-              const status = getTripStatus(booking.pickupDate, booking.dropoffDate);
-
-              return (
-                <Card key={booking.id} className="bg-[#232428] border-none">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="mb-3">
-                          <span 
-                            className={`inline-block px-3 py-1 font-mono  rounded-full text-sm font-medium ${
-                              status === 'In progress' 
-                                ? 'bg-yellow-600/20 text-yellow-400'
-                                : status === 'Confirmed'
-                                ? 'bg-green-600/20 text-green-400'
-                                : 'bg-gray-600/20 text-gray-400'
-                            }`}
-                          >
-                            {status}
-                          </span>
-                        </div>
-
-                        <h2 className="text-2xl font-bold text-white mb-2">
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
+                {filteredTrips.map((booking, idx) => {
+                  const status = getTripStatus(booking.pickupDate, booking.dropoffDate);
+                  const isExpanded = expandedTripId === booking.id;
+                  return (
+                    <motion.div
+                      key={booking.id}
+                      className="relative min-h-[320px] flex items-stretch group"
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 30 }}
+                      transition={{ duration: 0.5, delay: idx * 0.08 }}
+                    >
+                      {/* Car image fills the card */}
+                      <img
+                        src={booking.car.image}
+                        alt={`${booking.car.brand} ${booking.car.name}`}
+                        className="absolute inset-0 w-full h-full object-cover object-center rounded-2xl"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop';
+                        }}
+                      />
+                      {/* Overlay: car name and info icon */}
+                      <div className="absolute left-0 right-0 bottom-0 p-6 flex items-end justify-between z-10 pointer-events-none">
+                        <div className="bg-black/60 px-4 py-2 rounded-xl font-mono text-lg font-semibold text-white shadow-lg pointer-events-auto">
                           {booking.car.brand} {booking.car.name}
-                        </h2>
-
-                        <div className="space-y-1 font-mono  text-gray-400 mb-4">
-                          <p>Pickup: {formatDate(booking.pickupDate)}</p>
-                          <p>Return: {formatDate(booking.dropoffDate)}</p>
-                          <p>Location: {booking.pickupLocation}</p>
-                          <p className="text-green-400 font-mono  font-semibold">
-                            Total: ${booking.totalPrice}
-                          </p>
                         </div>
-
-                        <div className="flex gap-2">
-                          {activeTab === 'upcoming' && status === 'Confirmed' && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleCancelTrip(booking.id)}
-                              className="bg-transparent font-mono  border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
-                            >
-                              Cancel Trip
-                            </Button>
+                        <button
+                          className="ml-4 bg-black/60 hover:bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg pointer-events-auto transition-colors"
+                          aria-label={isExpanded ? 'Hide details' : 'Show details'}
+                          onClick={() => setExpandedTripId(isExpanded ? null : booking.id)}
+                          type="button"
+                        >
+                          {isExpanded ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z" /></svg>
                           )}
-                          <Link to={`/car/${booking.car.id}`}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="bg-transparent font-mono  border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                        </button>
+                      </div>
+                      {/* Expandable details bubble */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            key="modal-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4"
+                            onClick={() => setExpandedTripId(null)}
+                          >
+                            <motion.div
+                              key="details"
+                              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                              transition={{ duration: 0.3 }}
+                              className="bg-[#232428]/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 max-w-md w-full border border-[#232428]/60 flex flex-col"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              View Car Details
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-
-                      <div className="ml-6 flex-shrink-0">
-                        <img
-                          src={booking.car.image}
-                          alt={`${booking.car.brand} ${booking.car.name}`}
-                          className="w-80 h-48 object-cover rounded-lg"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop';
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
+                              <div className="flex justify-between items-center mb-4">
+                                <span 
+                                  className={`inline-block px-3 py-1 font-mono rounded-full text-sm font-medium ${
+                                    status === 'In progress' 
+                                      ? 'bg-yellow-600/20 text-yellow-400'
+                                      : status === 'Confirmed'
+                                      ? 'bg-green-600/20 text-green-400'
+                                      : 'bg-gray-600/20 text-gray-400'
+                                  }`}
+                                >
+                                  {status}
+                                </span>
+                                <button
+                                  className="ml-2 bg-black/40 hover:bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-colors"
+                                  aria-label="Close details"
+                                  onClick={() => setExpandedTripId(null)}
+                                  type="button"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                              </div>
+                              <h2 className="text-2xl font-bold text-white mb-4 font-mono">
+                                {booking.car.brand} {booking.car.name}
+                              </h2>
+                              <div className="space-y-2 font-mono text-gray-300 mb-6">
+                                <p>Pickup: {formatDate(booking.pickupDate)}</p>
+                                <p>Return: {formatDate(booking.dropoffDate)}</p>
+                                <p>Location: {booking.pickupLocation}</p>
+                                <p className="text-green-400 font-mono font-semibold text-lg">
+                                  Total: ${booking.totalPrice}
+                                </p>
+                              </div>
+                              <div className="flex gap-2 mt-4">
+                                {activeTab === 'upcoming' && status === 'Confirmed' && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleCancelTrip(booking.id)}
+                                    className="bg-transparent font-mono border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                                  >
+                                    Cancel Trip
+                                  </Button>
+                                )}
+                                <Link to={`/car/${booking.car.id}`}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-transparent font-mono border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                                  >
+                                    View Car Details
+                                  </Button>
+                                </Link>
+                              </div>
+                            </motion.div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

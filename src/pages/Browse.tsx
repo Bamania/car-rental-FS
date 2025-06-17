@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 // import { data } from "@/mockdata/index"
 import type { FilterState } from "./types"
 import { useCarData } from "@/hooks/useCarData"
+import { motion } from "framer-motion"
 
 
 
@@ -13,7 +14,7 @@ export default function BrowsePage() {
   const [displayedItems, setDisplayedItems] = useState(12) // Start with 12 items
   const [isLoading, setIsLoading] = useState(false)
   const [savedCars, setSavedCars] = useState<number[]>([]) // Track saved car IDs
-  const data = useCarData();
+  const {data} = useCarData();
   
   const [filters, setFilters] = useState<FilterState>({
     carType: [],
@@ -99,7 +100,12 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#18191C] text-white">      {/* Header */}
+    <motion.div
+      className="min-h-screen bg-[#18191C] text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.7 }}
+    >      {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
         <Link to="/" className=" text-2xl  hover:text-gray-300 font-mono">
           DriveGo
@@ -121,11 +127,15 @@ export default function BrowsePage() {
       </header>
 
       <div className="flex">        {/* Sidebar Filters */}
-        <aside className="w-64 p-6 bg-[#1a1b1f] border-r border-[#232428]">
+        <motion.aside
+          className="w-64 p-6 bg-[#1a1b1f] border-r border-[#232428]"
+          initial={{ x: -60, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           <h2 className="text-xl font-semibold mb-6 font-mono">Filter</h2>
-          
           {/* Car Type Filter */}
-          <div className="mb-6">
+          <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <h3 className="font-medium mb-3 font-mono">Car Type</h3>
             <div className="space-y-2">
               {['SUV', 'Sedan', 'Truck', 'Van', 'Hatchback', 'Coupe'].map(type => (
@@ -140,10 +150,10 @@ export default function BrowsePage() {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Fuel Type Filter */}
-          <div className="mb-6">
+          <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <h3 className="font-medium mb-3 font-mono">Fuel Type</h3>
             <div className="space-y-2">
               {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(fuel => (
@@ -158,10 +168,10 @@ export default function BrowsePage() {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Transmission Filter */}
-          <div className="mb-6">
+          <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <h3 className="font-medium mb-3 font-mono">Transmission</h3>
             <div className="space-y-2">
               {['Automatic', 'Manual'].map(trans => (
@@ -176,10 +186,10 @@ export default function BrowsePage() {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Rating Filter */}
-          <div className="mb-6">
+          <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <h3 className="font-medium mb-3 font-mono">Rating</h3>
             <div className="space-y-2">
               {[5, 4, 3, 2, 1].map(rating => (
@@ -194,10 +204,10 @@ export default function BrowsePage() {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Price Range */}
-          <div className="mb-6">
+          <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <h3 className="font-medium mb-3 font-mono">Price Range</h3>
             <div className="text-sm text-gray-400 mb-2 font-mono">Price per day</div>
             <input
@@ -211,32 +221,65 @@ export default function BrowsePage() {
             <div className="text-sm text-gray-400 mt-1 font-mono">
               $0 - ${filters.priceRange[1]}
             </div>
-          </div>
-        </aside>        {/* Main Content */}
-        <main className="flex-1 p-6">          <h1 className="text-2xl font-semibold mb-6 font-mono">Available Cars ({filteredData.length} results)</h1>
+          </motion.div>
+        </motion.aside>        {/* Main Content */}
+        <motion.main
+          className="flex-1 p-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >          <motion.h1
+              className="text-2xl font-semibold mb-6 font-mono"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >Available Cars ({filteredData.length} results)</motion.h1>
             {/* Cars Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.08
+                }
+              }
+            }}
+          >
             {displayedData.map((car, index) => {
               const carId = car.id 
               console.log("Carid", carId)
               return (
-              <Card 
-                  key={`${car.name}-${index}`} 
+              <motion.div
+                key={`${car.name}-${index}`}
+                initial={{ opacity: 0, scale: 0.96, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.07 }}
+                whileHover={{ scale: 1.025, boxShadow: "0 4px 32px 0 rgba(67,161,255,0.10)" }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Card 
                   className="bg-[#232428] border-none rounded-lg overflow-hidden cursor-pointer hover:bg-[#2a2d32] transition-colors"
                   onClick={() => navigate(`/car/${carId}`)}
                 >                  
                 <div className="relative">
-                    <img
+                    <motion.img
                       src={car.image}
                       alt={`${car.brand} ${car.name}`}
                       className="w-full h-48 object-cover"
+                      initial={{ scale: 1.04, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.2 + index * 0.07 }}
                     />                    <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs font-mono">
                       {car.rating} stars
                     </div>
                     {/* Save/Heart Button */}
-                    <button
+                    <motion.button
                       onClick={(e) => handleSaveCar(carId!, e)}
                       className="absolute top-2 right-2 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+                      whileTap={{ scale: 0.85 }}
                     >
                       <svg 
                         className={`w-5 h-5 ${savedCars.includes(carId!) ? 'text-red-500 fill-current' : 'text-white'}`}
@@ -246,7 +289,7 @@ export default function BrowsePage() {
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                    </button>
+                    </motion.button>
                   </div>                  <CardContent className="p-4">
                     <h3 className="font-semibold text-white text-lg mb-1 font-mono">{car.brand} {car.name}</h3>
                     <p className="text-gray-400 text-sm mb-2 font-mono">{car.type}</p>
@@ -268,18 +311,19 @@ export default function BrowsePage() {
                     </p>
                   </CardContent>
                 </Card>
+              </motion.div>
               )
-            })}          </div>          {/* Loading indicator */}
+            })}          </motion.div>          {/* Loading indicator */}
           {isLoading && (
-            <div className="flex justify-center items-center py-8">
+            <motion.div className="flex justify-center items-center py-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               <span className="ml-3 text-gray-400 font-mono">Loading more cars...</span>
-            </div>
+            </motion.div>
           )}
 
           {/* End of results indicator */}
           {!hasMore && displayedData.length > 0 && (
-            <div className="text-center py-8">
+            <motion.div className="text-center py-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <p className="text-gray-400 font-mono">You've seen all available cars!</p>
               <Button 
                 variant="outline" 
@@ -288,10 +332,10 @@ export default function BrowsePage() {
               >
                 Back to Top
               </Button>
-            </div>
+            </motion.div>
           )}          {/* No results */}
           {filteredData.length === 0 && (
-            <div className="text-center py-16">
+            <motion.div className="text-center py-16" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <div className="w-24 h-24 bg-[#232428] rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.1-5.291-2.709M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -313,10 +357,10 @@ export default function BrowsePage() {
               >
                 Clear All Filters
               </Button>
-            </div>
+            </motion.div>
           )}
-        </main>
+        </motion.main>
       </div>
-    </div>
+    </motion.div>
   )
 }
