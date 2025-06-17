@@ -32,3 +32,12 @@ export interface BookedCar {
     price_per_day: number;
   };
 }
+export interface BookingModalProps {
+  isOpen: boolean
+  onClose: () => void
+  car: {
+    brand: string
+    name: string
+    price_per_day: number
+  }
+}

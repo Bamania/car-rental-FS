@@ -45,22 +45,16 @@ export default function SignupPage() {
     if (!validateForm()) {
       setLoading(false)
       return
-    }    try {
-      // Use API service for signup
-    const response = await axios.post(`${backendUrl}/auth/signup`, {
-       formData
-    });
+    }
+    try {
+      const response = await axios.post(`${backendUrl}/auth/signup`, {
+        formData
+      });
 
-    // Alert the response received from the backend API
-    alert(response.data?.message || 'Signup successful!');
-
-    // Simulate successful signup
-    console.log('Signup successful:', response.data)
-     
+      alert(response.data?.message || 'Signup successful!')
+      console.log('Signup successful:', response.data)
       navigate('/')
-      
     } catch (error: any) {
-      // Handle signup error
       setError(error.message || 'Signup failed. Please try again.')
       console.error('Signup error:', error)
     } finally {
@@ -69,7 +63,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#18191C] text-white flex items-center justify-center">
+    <div className="min-h-screen w-full bg-[#18191C] text-white flex items-center justify-center font-mono">
       <div className="w-full max-w-md mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-8">
@@ -86,9 +80,9 @@ export default function SignupPage() {
                   {error}
                 </div>
               )}
-              
+
               <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
+                <label htmlFor="name" className="block text-sm text-white font-medium mb-2">
                   Full Name
                 </label>
                 <input
@@ -104,7 +98,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
+                <label htmlFor="email" className="block  text-white text-sm font-medium mb-2">
                   Email Address
                 </label>
                 <input
@@ -120,7 +114,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="phoneNumber" className="block text-sm font-medium mb-2">
+                <label htmlFor="phoneNumber" className="block text-white text-sm font-medium mb-2">
                   Phone Number
                 </label>
                 <input
@@ -136,7 +130,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium mb-2">
+                <label htmlFor="password" className="block  text-white text-sm font-medium mb-2">
                   Password
                 </label>
                 <input
@@ -152,7 +146,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+                <label htmlFor="confirmPassword" className="block text-white text-sm font-medium mb-2">
                   Confirm Password
                 </label>
                 <input

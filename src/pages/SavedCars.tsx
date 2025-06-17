@@ -21,7 +21,7 @@ const savedCarsData = [
     carData: data.find(car => car.brand === "Ford" && car.name === "Mustang GT"),
     savedDate: "2024-06-05"
   }
-].filter(item => item.carData) // Remove any undefined entries
+].filter(item => item.carData)
 
 export default function SavedCarsPage() {
   const navigate = useNavigate()
@@ -36,25 +36,25 @@ export default function SavedCarsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#18191C] text-white">
+    <div className="min-h-screen bg-[#18191C] text-white font-mono">
       {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
-        <Link to="/" className="font-bold text-lg hover:text-gray-300">
+        <Link to="/" className="font-bold text-lg hover:text-gray-300 font-mono">
           DriveGo
         </Link>
-        <nav className="flex gap-8 items-center">
-          <Link to="/browse" className="hover:underline">Rent</Link>
-          <Link to="/buy" className="hover:underline">Buy</Link>
-          <Link to="/sell" className="hover:underline">Sell</Link>
-          <Link to="/finance" className="hover:underline">Finance</Link>
-          <Link to="/insurance" className="hover:underline">Insurance</Link>
+        <nav className="flex gap-8 items-center font-mono">
+          <Link to="/browse" className="hover:underline font-mono">Rent</Link>
+          <Link to="/buy" className="hover:underline font-mono">Buy</Link>
+          <Link to="/sell" className="hover:underline font-mono">Sell</Link>
+          <Link to="/finance" className="hover:underline font-mono">Finance</Link>
+          <Link to="/insurance" className="hover:underline font-mono">Insurance</Link>
         </nav>
         <div className="flex items-center gap-4">
           <div className="relative">
             <input
               type="text"
               placeholder="Search"
-              className="bg-[#2a2d32] text-white px-4 py-2 rounded-lg text-sm w-64 pl-10"
+              className="bg-[#2a2d32] text-white px-4 py-2 rounded-lg text-sm w-64 pl-10 font-mono placeholder:font-mono"
             />
             <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -66,14 +66,14 @@ export default function SavedCarsPage() {
             </svg>
           </button>
           <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-            <span className="text-sm font-bold">U</span>
+            <span className="text-sm font-bold font-mono">U</span>
           </div>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-8 py-8">
         {/* Page Title */}
-        <h1 className="text-4xl font-bold mb-8">Saved cars</h1>
+        <h1 className="text-4xl font-bold mb-8 font-mono">Saved cars</h1>
 
         {/* Saved Cars List */}
         {savedCars.length === 0 ? (
@@ -83,10 +83,10 @@ export default function SavedCarsPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">No saved cars yet</h3>
-            <p className="text-gray-400 mb-6">Start browsing and save cars you're interested in!</p>
+            <h3 className="text-xl font-semibold text-white mb-2 font-mono">No saved cars yet</h3>
+            <p className="text-gray-400 mb-6 font-mono">Start browsing and save cars you're interested in!</p>
             <Link to="/browse">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600 hover:bg-blue-700 font-mono">
                 Browse Cars
               </Button>
             </Link>
@@ -100,25 +100,25 @@ export default function SavedCarsPage() {
               const carSlug = `${car.brand.toLowerCase()}-${car.name.toLowerCase()}`.replace(/\s+/g, '-')
               
               return (
-                <Card key={savedCar.id} className="bg-[#232428] border-none">
+                <Card key={savedCar.id} className="bg-[#232428] border-none font-mono">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
                       {/* Car Details */}
                       <div className="flex-1 p-8">
                         {/* Saved Badge */}
                         <div className="mb-3">
-                          <span className="inline-block px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-medium">
+                          <span className="inline-block px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-medium font-mono">
                             Saved
                           </span>
                         </div>
 
                         {/* Car Name */}
-                        <h2 className="text-2xl font-bold text-white mb-2">
+                        <h2 className="text-2xl font-bold text-white mb-2 font-mono">
                           {new Date().getFullYear()} {car.brand} {car.name}
                         </h2>
 
                         {/* Car Specs */}
-                        <p className="text-gray-400 mb-6">
+                        <p className="text-gray-400 mb-6 font-mono">
                           {car.type} • Seats 5 • {car.transmission}
                         </p>
 
@@ -126,7 +126,7 @@ export default function SavedCarsPage() {
                           {/* Book Now Button */}
                           <Button
                             onClick={() => handleBookNow(carSlug)}
-                            className="bg-[#3a3d42] hover:bg-[#4a4d52] text-white border border-[#4a4d52]"
+                            className="bg-[#3a3d42] hover:bg-[#4a4d52] text-white border border-[#4a4d52] font-mono"
                           >
                             Book now
                           </Button>
@@ -134,7 +134,7 @@ export default function SavedCarsPage() {
                           {/* Remove from Saved */}
                           <button
                             onClick={() => handleRemoveSaved(savedCar.id)}
-                            className="text-gray-400 hover:text-red-400 text-sm transition-colors"
+                            className="text-gray-400 hover:text-red-400 text-sm transition-colors font-mono"
                           >
                             Remove from saved
                           </button>
@@ -160,9 +160,9 @@ export default function SavedCarsPage() {
         {/* Add more cars suggestion */}
         {savedCars.length > 0 && (
           <div className="mt-12 text-center">
-            <p className="text-gray-400 mb-4">Looking for more options?</p>
+            <p className="text-gray-400 mb-4 font-mono">Looking for more options?</p>
             <Link to="/browse">
-              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
+              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white font-mono">
                 Browse More Cars
               </Button>
             </Link>

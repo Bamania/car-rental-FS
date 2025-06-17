@@ -99,24 +99,22 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#18191C] text-white">
-      {/* Header */}
+    <div className="min-h-screen bg-[#18191C] text-white">      {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-[#232428]">
-        <Link to="/" className="font-bold text-lg hover:text-gray-300">
+        <Link to="/" className="font-bold text-lg hover:text-gray-300 font-mono">
           AutoZen
         </Link>
         <nav className="flex gap-8 items-center">
-          <span className="text-blue-400">Ride</span>
-          <Link to="/rent" className="hover:underline">Rent</Link>
-          <Link to="/eat" className="hover:underline">Eat</Link>
-          <Link to="/charter" className="hover:underline">Charter</Link>
+          <span className="text-blue-400 font-mono">Ride</span>
+          <Link to="/rent" className="hover:underline font-mono">Rent</Link>
+          <Link to="/eat" className="hover:underline font-mono">Eat</Link>
+          <Link to="/charter" className="hover:underline font-mono">Charter</Link>
         </nav>
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <input
+          <div className="relative">            <input
               type="text"
               placeholder="Search"
-              className="bg-[#2a2d32] text-white px-4 py-2 rounded-lg text-sm w-64"
+              className="bg-[#2a2d32] text-white px-4 py-2 rounded-lg text-sm w-64 font-mono"
             />
           </div>
           
@@ -124,14 +122,13 @@ export default function BrowsePage() {
         </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar Filters */}
+      <div className="flex">        {/* Sidebar Filters */}
         <aside className="w-64 p-6 bg-[#1a1b1f] border-r border-[#232428]">
-          <h2 className="text-xl font-semibold mb-6">Filter</h2>
+          <h2 className="text-xl font-semibold mb-6 font-mono">Filter</h2>
           
           {/* Car Type Filter */}
           <div className="mb-6">
-            <h3 className="font-medium mb-3">Car Type</h3>
+            <h3 className="font-medium mb-3 font-mono">Car Type</h3>
             <div className="space-y-2">
               {['SUV', 'Sedan', 'Truck', 'Van', 'Hatchback', 'Coupe'].map(type => (
                 <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -141,7 +138,7 @@ export default function BrowsePage() {
                     checked={filters.carType.includes(type)}
                     onChange={() => handleFilterChange('carType', type)}
                   />
-                  <span className="text-sm">{type}</span>
+                  <span className="text-sm font-mono">{type}</span>
                 </label>
               ))}
             </div>
@@ -149,7 +146,7 @@ export default function BrowsePage() {
 
           {/* Fuel Type Filter */}
           <div className="mb-6">
-            <h3 className="font-medium mb-3">Fuel Type</h3>
+            <h3 className="font-medium mb-3 font-mono">Fuel Type</h3>
             <div className="space-y-2">
               {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(fuel => (
                 <label key={fuel} className="flex items-center gap-2 cursor-pointer">
@@ -159,7 +156,7 @@ export default function BrowsePage() {
                     checked={filters.fuelType.includes(fuel)}
                     onChange={() => handleFilterChange('fuelType', fuel)}
                   />
-                  <span className="text-sm">{fuel}</span>
+                  <span className="text-sm font-mono">{fuel}</span>
                 </label>
               ))}
             </div>
@@ -167,7 +164,7 @@ export default function BrowsePage() {
 
           {/* Transmission Filter */}
           <div className="mb-6">
-            <h3 className="font-medium mb-3">Transmission</h3>
+            <h3 className="font-medium mb-3 font-mono">Transmission</h3>
             <div className="space-y-2">
               {['Automatic', 'Manual'].map(trans => (
                 <label key={trans} className="flex items-center gap-2 cursor-pointer">
@@ -177,7 +174,7 @@ export default function BrowsePage() {
                     checked={filters.transmission.includes(trans)}
                     onChange={() => handleFilterChange('transmission', trans)}
                   />
-                  <span className="text-sm">{trans}</span>
+                  <span className="text-sm font-mono">{trans}</span>
                 </label>
               ))}
             </div>
@@ -185,7 +182,7 @@ export default function BrowsePage() {
 
           {/* Rating Filter */}
           <div className="mb-6">
-            <h3 className="font-medium mb-3">Rating</h3>
+            <h3 className="font-medium mb-3 font-mono">Rating</h3>
             <div className="space-y-2">
               {[5, 4, 3, 2, 1].map(rating => (
                 <label key={rating} className="flex items-center gap-2 cursor-pointer">
@@ -195,7 +192,7 @@ export default function BrowsePage() {
                     checked={filters.rating.includes(rating)}
                     onChange={() => handleFilterChange('rating', rating)}
                   />
-                  <span className="text-sm">{rating} stars</span>
+                  <span className="text-sm font-mono">{rating} stars</span>
                 </label>
               ))}
             </div>
@@ -203,8 +200,8 @@ export default function BrowsePage() {
 
           {/* Price Range */}
           <div className="mb-6">
-            <h3 className="font-medium mb-3">Price Range</h3>
-            <div className="text-sm text-gray-400 mb-2">Price per day</div>
+            <h3 className="font-medium mb-3 font-mono">Price Range</h3>
+            <div className="text-sm text-gray-400 mb-2 font-mono">Price per day</div>
             <input
               type="range"
               min="0"
@@ -213,14 +210,12 @@ export default function BrowsePage() {
               onChange={(e) => handleFilterChange('priceRange', [0, parseInt(e.target.value)])}
               className="w-full accent-blue-500"
             />
-            <div className="text-sm text-gray-400 mt-1">
+            <div className="text-sm text-gray-400 mt-1 font-mono">
               $0 - ${filters.priceRange[1]}
             </div>
           </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-6">          <h1 className="text-2xl font-semibold mb-6">Available Cars ({filteredData.length} results)</h1>
+        </aside>        {/* Main Content */}
+        <main className="flex-1 p-6">          <h1 className="text-2xl font-semibold mb-6 font-mono">Available Cars ({filteredData.length} results)</h1>
             {/* Cars Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {displayedData.map((car, index) => {
@@ -237,8 +232,7 @@ export default function BrowsePage() {
                       src={car.image}
                       alt={`${car.brand} ${car.name}`}
                       className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs">
+                    />                    <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs font-mono">
                       {car.rating} stars
                     </div>
                     {/* Save/Heart Button */}
@@ -255,14 +249,13 @@ export default function BrowsePage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </button>
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-white text-lg mb-1">{car.brand} {car.name}</h3>
-                    <p className="text-gray-400 text-sm mb-2">{car.type}</p>
+                  </div>                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-white text-lg mb-1 font-mono">{car.brand} {car.name}</h3>
+                    <p className="text-gray-400 text-sm mb-2 font-mono">{car.type}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-white font-semibold">${car.price_per_day}/day</span>                      <Button 
+                      <span className="text-white font-semibold font-mono">${car.price_per_day}/day</span>                      <Button 
                         size="sm" 
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 font-mono"
                         onClick={(e) => {
                           e.stopPropagation()
                           navigate(`/car/${carId}`)
@@ -271,38 +264,34 @@ export default function BrowsePage() {
                         Rent
                       </Button>
                     </div>
-                    <p className="text-white">
+                    <p className="text-white font-mono">
                     {car.description}
                       
                     </p>
                   </CardContent>
                 </Card>
               )
-            })}          </div>
-
-          {/* Loading indicator */}
+            })}          </div>          {/* Loading indicator */}
           {isLoading && (
             <div className="flex justify-center items-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-400">Loading more cars...</span>
+              <span className="ml-3 text-gray-400 font-mono">Loading more cars...</span>
             </div>
           )}
 
           {/* End of results indicator */}
           {!hasMore && displayedData.length > 0 && (
             <div className="text-center py-8">
-              <p className="text-gray-400">You've seen all available cars!</p>
+              <p className="text-gray-400 font-mono">You've seen all available cars!</p>
               <Button 
                 variant="outline" 
-                className="mt-4"
+                className="mt-4 font-mono"
                 onClick={() => setDisplayedItems(12)}
               >
                 Back to Top
               </Button>
             </div>
-          )}
-
-          {/* No results */}
+          )}          {/* No results */}
           {filteredData.length === 0 && (
             <div className="text-center py-16">
               <div className="w-24 h-24 bg-[#232428] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -310,8 +299,8 @@ export default function BrowsePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.1-5.291-2.709M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No cars found</h3>
-              <p className="text-gray-400 mb-6">Try adjusting your filters to see more results</p>
+              <h3 className="text-xl font-semibold text-white mb-2 font-mono">No cars found</h3>
+              <p className="text-gray-400 mb-6 font-mono">Try adjusting your filters to see more results</p>
               <Button 
                 onClick={() => {
                   setFilters({
@@ -322,7 +311,7 @@ export default function BrowsePage() {
                     priceRange: [0, 300]
                   })
                 }}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 font-mono"
               >
                 Clear All Filters
               </Button>

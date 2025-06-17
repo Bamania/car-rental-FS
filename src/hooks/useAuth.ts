@@ -7,6 +7,8 @@ interface AuthState {
   isAuthenticated: boolean | null;
   isLoading: boolean;
   userId: number | null;
+  name:string | null;
+  email: string | null;
 }
 
 export const useAuth = () => {
@@ -14,6 +16,8 @@ export const useAuth = () => {
     isAuthenticated: null,
     isLoading: true,
     userId: null,
+    name: null,
+    email: null,
   });
 
   const checkAuthStatus = async () => {
@@ -28,21 +32,27 @@ export const useAuth = () => {
           isAuthenticated: response.data.loggedIn,
           isLoading: false,
           userId: response.data.userId || null,
+          name: response.data.userName|| null,
+          email: response.data.userEmail || null,
         });
       } else {
         setAuthState({
           isAuthenticated: false,
           isLoading: false,
           userId: null,
+          name: null,
+          email: null,
         });
       }
     } catch (error) {
       console.error("Auth check failed:", error);
-      setAuthState({
-        isAuthenticated: false,
-        isLoading: false,
-        userId: null,
-      });
+     setAuthState({
+          isAuthenticated: false,
+          isLoading: false,
+          userId: null,
+          name: null,
+          email: null,
+        });
     }
   };
 
