@@ -1,6 +1,6 @@
 import type { Car } from "@/pages/types";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useEffect, useState, type ReactNode } from "react";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 

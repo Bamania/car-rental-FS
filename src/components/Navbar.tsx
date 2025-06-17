@@ -1,13 +1,13 @@
-import { motion, useScroll, useMotionValueEvent, scale } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 
 export default function Navbar() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+ 
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
 
