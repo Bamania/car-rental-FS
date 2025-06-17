@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 
 export default function Navbar() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
  
   const { scrollY } = useScroll();
@@ -15,7 +15,10 @@ export default function Navbar() {
     setIsScrolled(latest > 50);
   });
 
-  
+  const handleSignOut = async () => {
+    await logout();
+    navigate("/");
+  };
 
   return (
     <motion.header
@@ -96,7 +99,7 @@ export default function Navbar() {
                 <Button
                   variant="link"
                   className="relative overflow-hidden shadow-lg hover:shadow-blue-500/50 transition-all duration-300 group"
-                  onClick={() => {}}
+                  onClick={handleSignOut}
                 >
                   <span className="relative font-mono  text-white z-10">
                     Sign Out

@@ -129,8 +129,8 @@ export default function LoginPage() {
             {/* Demo Credentials */}
             <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg font-mono">
               <p className="text-yellow-400 text-sm font-medium mb-1 font-mono">Demo Credentials:</p>
-              <p className="text-yellow-300 text-xs font-mono">Email: demo@example.com</p>
-              <p className="text-yellow-300 text-xs font-mono">Password: demo123</p>
+              <p className="text-yellow-300 text-xs font-mono">Email: aman2@gmail.com</p>
+              <p className="text-yellow-300 text-xs font-mono">Password: 12345678</p>
             </div>
           </CardContent>
         </Card>

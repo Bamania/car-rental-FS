@@ -56,7 +56,32 @@ export const useAuth = () => {
     }
   };
 
-
+  const logout = async () => {
+    try {
+      await axios.post(`${backendUrl}/auth/logout`, {}, {
+        withCredentials: true,
+      });
+      
+      // Clear local auth state
+      setAuthState({
+        isAuthenticated: false,
+        isLoading: false,
+        userId: null,
+        name: null,
+        email: null,
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Even if the request fails, clear local state
+      setAuthState({
+        isAuthenticated: false,
+        isLoading: false,
+        userId: null,
+        name: null,
+        email: null,
+      });
+    }
+  };
 
   // Check auth status on mount
   useEffect(() => {
@@ -67,5 +92,6 @@ export const useAuth = () => {
     ...authState,
     checkAuthStatus,    
     refetch: checkAuthStatus,
+    logout,
   };
 };
